@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#a4262c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Русский">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23a4262c'/%3E%3Ctext x='32' y='45' font-size='38' font-family='Georgia,serif' fill='white' text-anchor='middle'%3E%D0%AF%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23a4262c'/%3E%3Ctext x='32' y='45' font-size='38' font-family='Georgia,serif' fill='white' text-anchor='middle'%3E%D0%AF%3C/text%3E%3C/svg%3E">
+<title>Русский — Study Deck</title>
+<style>
+/* Colours are tuned for WCAG 2.2 AA (4.5:1 body text) in BOTH themes. If you change one,
+   re-check it: the tight pairs are muted-on-accent-soft and anything sitting on a filled
+   accent button. --on-accent is the label colour for filled accent surfaces; it is white
+   in light mode but near-black in dark, because white on the lighter dark-mode pink is
+   only 3.26:1. */
+:root{
+  --bg:#f6f5f2; --panel:#fff; --ink:#181a1c; --muted:#63686e; --line:#e2e0da;
+  --accent:#a4262c; --accent-soft:#f7e9e9; --good:#2c7549; --good-soft:#e6f3ea;
+  --bad:#b4272d; --bad-soft:#fbe9e9; --on-accent:#fff;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06); --r:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#14171a; --panel:#1b1f24; --ink:#e8e6e3; --muted:#9aa1a8; --line:#2b3138;
+        --accent:#e2686e; --accent-soft:#2a1e20; --good:#5cc98a; --good-soft:#16301f;
+        --bad:#f0787e; --bad-soft:#331a1c; --on-accent:#14171a;
+        --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
+}
+/* Respect a system request for less motion: the only animation is the progress bar. */
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;padding-bottom:env(safe-area-inset-bottom)}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 96px}
+header{padding:16px 0 8px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+header h1{font-size:19px;margin:0;letter-spacing:-.01em}
+header .sub{color:var(--muted);font-size:13px}
+nav{position:sticky;top:0;z-index:20;background:var(--bg);padding:6px 0 10px;
+    display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--muted);
+  padding:8px 14px;border-radius:999px;font-size:14px;cursor:pointer;font-weight:500;font-family:inherit}
+nav button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+      box-shadow:var(--shadow);padding:18px;margin:0 0 14px}
+h2{font-size:15px;margin:22px 0 10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+h3{font-size:16px;margin:18px 0 6px}
+p{margin:0 0 10px}
+.muted{color:var(--muted)} .small{font-size:13px}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.92em;background:var(--bg);padding:1px 5px;border-radius:5px}
+
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.seg button{flex:1;border:0;background:var(--panel);color:var(--muted);padding:11px 4px;
+  font-size:13px;font-weight:600;cursor:pointer;border-right:1px solid var(--line);font-family:inherit}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--accent);color:var(--on-accent)}
+
+.stage{min-height:180px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:22px 12px;user-select:none}
+.stage.tap{cursor:pointer}
+.prompt{font-size:30px;font-weight:600;line-height:1.3;word-break:break-word}
+.prompt.en{font-size:23px;font-weight:500}
+.prompt.q{font-size:21px;font-weight:600}
+.prompt.sent{font-size:24px;font-weight:600}
+.answer{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);width:100%}
+.answer .main{font-size:23px;font-weight:600}
+.answer .note,.qhint{color:var(--muted);font-size:14px;margin-top:8px}
+.hint{color:var(--muted);font-size:13px;margin-top:14px}
+
+.say{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1px solid var(--line);background:var(--panel);color:var(--accent);
+  border-radius:999px;padding:7px 14px;font-size:14px;cursor:pointer;margin-top:12px;
+  font-family:inherit;font-weight:600}
+.say.big{width:96px;height:96px;border-radius:50%;font-size:38px;padding:0;margin:0 auto}
+.say[disabled]{opacity:.4;cursor:default}
+
+.rate{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rate button{padding:15px 8px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.rate button small{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:3px}
+.rate button.again{border-color:var(--accent);color:var(--accent)}
+.rate button.good{border-color:var(--good);color:var(--good)}
+
+.opts{display:grid;gap:8px}
+.opts button{display:flex;align-items:center;gap:10px;text-align:left;padding:14px;
+  border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  font-size:17px;cursor:pointer;font-family:inherit;width:100%}
+.opts button .k{flex:0 0 22px;height:22px;border-radius:6px;background:var(--bg);
+  border:1px solid var(--line);font-size:12px;display:flex;align-items:center;
+  justify-content:center;color:var(--muted);font-weight:600}
+.opts button.right{border-color:var(--good);background:var(--good-soft);color:var(--good);font-weight:600}
+.opts button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.opts button[disabled]{cursor:default}
+.why{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--bg);
+  border:1px solid var(--line);font-size:14px;line-height:1.55}
+.why b{color:var(--accent)}
+.verdict{font-weight:700;font-size:15px;margin-bottom:4px}
+.verdict.ok{color:var(--good)} .verdict.no{color:var(--bad)}
+
+.typeRow{display:flex;gap:8px}
+.typeRow input{flex:1;min-width:0;padding:14px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);font-size:20px;font-family:inherit}
+/* on-screen Cyrillic keyboard — so no Russian keyboard layout is needed */
+.kb{margin-top:12px}
+.kb .kr{display:flex;gap:4px;margin-bottom:5px}
+.kb button{flex:1 1 0;min-width:0;height:46px;padding:0;border-radius:7px;
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  font-size:17px;cursor:pointer;font-family:inherit;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.kb button:active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.kb button.w2{flex:2.2 1 0}
+.kb button.w3{flex:4 1 0}
+.kb button.act{color:var(--accent);font-weight:700}
+
+/* word-order builder */
+.slot{min-height:64px;border:1px dashed var(--line);border-radius:12px;padding:10px;
+  display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start;background:var(--bg)}
+.bank{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.chip{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);
+  color:var(--ink);font-size:17px;cursor:pointer;font-family:inherit}
+.chip.ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+
+.bar{height:5px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.counts{display:flex;gap:14px;justify-content:center;font-size:13px;color:var(--muted);
+  margin-top:10px;flex-wrap:wrap}
+.counts b{color:var(--ink);font-weight:600}
+
+.deck{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);
+      border-radius:12px;margin-bottom:8px;background:var(--panel);cursor:pointer}
+.deck.on{border-color:var(--accent);background:var(--accent-soft)}
+.deck .nm{flex:1;min-width:0}
+.deck .nm b{display:block;font-size:15px;font-weight:600}
+.deck .nm span{font-size:12.5px;color:var(--muted)}
+.deck .ct{font-size:12px;color:var(--muted);white-space:nowrap;text-align:right}
+.deck .box{width:20px;height:20px;border:2px solid var(--line);border-radius:6px;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--on-accent)}
+.deck.on .box{background:var(--accent);border-color:var(--accent)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{padding:11px 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel);
+  color:var(--ink);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.danger{color:var(--accent);border-color:var(--accent)}
+.btn.wide{width:100%;padding:14px}
+select,input[type=search]{padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);font-size:14px;width:100%;font-family:inherit}
+label.sw{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;cursor:pointer}
+label.sw input{width:20px;height:20px}
+.vrow{display:flex;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:15px;
+  align-items:center}
+.vrow .r{flex:1;font-weight:600}
+.vrow .e{flex:1.25;color:var(--muted);font-size:14px}
+.vrow .s{flex:0 0 auto;border:0;background:none;color:var(--accent);font-size:16px;cursor:pointer}
+#guide table{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 14px}
+#guide th,#guide td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+#guide th{background:var(--accent-soft);font-weight:600;white-space:nowrap}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#guide ul{margin:0 0 12px;padding-left:20px}
+#guide li{margin-bottom:5px}
+.ru{font-weight:600}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;
+  background:var(--accent-soft);color:var(--accent);font-weight:600}
+.warn{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;
+  padding:11px 13px;font-size:13.5px;margin-bottom:12px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<noscript>
+  <div style="max-width:760px;margin:0 auto;padding:24px 16px">
+    <h1 style="font-size:19px" lang="ru">Ру́сский язы́к</h1>
+    <p>This study app runs entirely in your browser with no server behind it, so it needs
+       JavaScript switched on. Nothing is sent anywhere and no account is needed — enable
+       JavaScript and reload.</p>
+  </div>
+</noscript>
+<div class="wrap">
+<header><h1 lang="ru">Ру́сский язы́к</h1><span class="sub">flashcards · quizzes · dictation · grammar drills</span></header>
+
+<nav aria-label="Sections">
+  <button type="button" data-tab="study" class="on" aria-current="page">Study</button>
+  <button data-tab="drills">Drills</button>
+  <button data-tab="build">Build</button>
+  <button data-tab="audio">Audio</button>
+  <button data-tab="decks">Decks</button>
+  <button data-tab="guide">Guide</button>
+  <button data-tab="browse">Browse</button>
+  <button data-tab="stats">Progress</button>
+</nav>
+<div id="storeWarn" class="warn hide"></div>
+
+<!-- ================= STUDY ================= -->
+<section id="study">
+  <div class="seg" id="modeSeg">
+    <button data-mode="card" class="on">Cards</button>
+    <button data-mode="choice">Choice</button>
+    <button data-mode="type">Type</button>
+    <button data-mode="listen">Listen</button>
+  </div>
+  <div id="voiceWarn" class="warn hide"></div>
+  <div class="card" id="sCard">
+    <div class="stage" id="stage"><div id="face"><div class="prompt">—</div></div>
+      <div class="hint" id="hint"></div></div>
+    <div class="bar"><i id="bar" style="width:0%"></i></div>
+    <div class="counts"><span>new <b id="cNew">0</b></span><span>due <b id="cDue">0</b></span>
+      <span>done <b id="cDone">0</b></span><span>correct <b id="cAcc">—</b></span></div>
+  </div>
+  <div id="controls"></div>
+  <div id="emptyMsg" class="card hide">
+    <p><b>Nothing due right now.</b></p>
+    <p class="muted small" id="emptyDetail"></p>
+    <button class="btn wide" id="cram">Practise anyway (ignores the schedule)</button>
+  </div>
+</section>
+
+<!-- ================= DRILLS ================= -->
+<section id="drills" class="hide">
+  <div class="card" id="dCard">
+    <div class="stage" id="dStage"><div id="dFace"><div class="prompt q">—</div></div></div>
+    <div class="bar"><i id="dBar" style="width:0%"></i></div>
+    <div class="counts"><span>due <b id="dDue">0</b></span><span>done <b id="dDone">0</b></span>
+      <span>correct <b id="dAcc">—</b></span></div>
+  </div>
+  <div id="dControls"></div>
+  <div id="dEmpty" class="card hide">
+    <p><b>No drills queued.</b></p>
+    <p class="muted small" id="dEmptyDetail"></p>
+    <button class="btn wide" id="dCram">Practise anyway</button>
+  </div>
+  <h2>Topics</h2>
+  <div class="row" style="margin-bottom:10px">
+    <button class="btn" id="dAll">All</button><button class="btn" id="dNone">Clear</button>
+  </div>
+  <div id="drillCats"></div>
+</section>
+
+<!-- ================= BUILD ================= -->
+<section id="build" class="hide">
+  <div class="card">
+    <p class="muted small" style="margin:0 0 10px">Put the words in order. Word order in Russian
+       is flexible, so these are the neutral, natural orderings — the endings are what carry
+       the grammar.</p>
+    <div id="wPrompt" class="prompt en" style="font-size:19px;text-align:center;margin-bottom:6px">—</div>
+    <div class="qhint" id="wHint" style="text-align:center;margin-bottom:14px"></div>
+    <div class="slot" id="wSlot"></div>
+    <div class="bank" id="wBank"></div>
+    <div class="counts"><span>done <b id="wDone">0</b></span><span>correct <b id="wAcc">—</b></span></div>
+  </div>
+  <div id="wControls"></div>
+</section>
+
+<!-- ================= DECKS ================= -->
+<section id="decks" class="hide">
+  <h2>Audio</h2>
+  <div class="card">
+    <div id="voiceInfo" class="small muted">checking for a Russian voice…</div>
+    <label class="sw"><input type="checkbox" id="autoPlay"> Speak the Russian automatically</label>
+    <div class="row" style="margin-top:6px">
+      <label class="small muted">Speed</label>
+      <select id="rate" style="width:auto">
+        <option value="0.6">slow</option>
+        <option value="0.8" selected>normal</option>
+        <option value="1">native</option>
+      </select>
+      <button class="btn" id="testVoice">Test</button>
+    </div>
+  </div>
+  <h2>Direction</h2>
+  <div class="card">
+    <select id="dir">
+      <option value="ru2en">Russian → English (recognition)</option>
+      <option value="en2ru">English → Russian (recall — harder)</option>
+      <option value="mixed">Mixed</option>
+    </select>
+    <p class="muted small" style="margin:10px 0 0">Type and Listen always ask for the Russian.</p>
+    <div class="row" style="margin-top:12px">
+      <label class="small muted">New cards per session</label>
+      <select id="newLimit" style="width:auto">
+        <option>10</option><option selected>20</option><option>40</option><option>80</option>
+      </select>
+    </div>
+  </div>
+  <h2>Decks</h2>
+  <div class="row" style="margin-bottom:10px">
+    <button class="btn" id="selAll">Select all</button><button class="btn" id="selNone">Clear</button>
+  </div>
+  <div id="deckList"></div>
+</section>
+
+<!-- ================= AUDIO ================= -->
+<section id="audio" class="hide">
+  <div class="warn">
+    <b>These are the real recordings from your workbook</b> — the audio the QR codes in
+    <i>Россия — моя любовь: Рабочая тетрадь</i> point to, streamed from the МГУ language
+    centre. Unlike the rest of the app, this tab needs an internet connection.
+  </div>
+  <div class="card">
+    <p class="muted small" style="margin:0">Native speakers, recorded for the exercises in the
+       workbook. Use them for dictation: play a track, write down what you hear, then check
+       against the workbook page given for each one.</p>
+  </div>
+  <div id="audioList"></div>
+</section>
+
+<section id="guide" class="hide">__GUIDE__</section>
+
+<section id="browse" class="hide">
+  <div class="card">
+    <input type="search" id="q" placeholder="Search Russian or English…" autocomplete="off">
+    <p class="muted small" id="qCount" style="margin:10px 0 0">Type to search all __TOTAL__ cards.</p>
+  </div>
+  <div id="results"></div>
+</section>
+
+<section id="stats" class="hide">
+  <div class="card" id="statBody"></div>
+  <div class="card">
+    <h3 style="margin-top:0">Data</h3>
+    <p class="muted small">Progress lives in this browser's local storage. Export to move it to
+       another device or keep a backup.</p>
+    <div class="row">
+      <button class="btn" id="export">Export progress</button>
+      <button class="btn" id="importBtn">Import</button>
+      <button class="btn danger" id="reset">Reset all</button>
+    </div>
+    <input type="file" id="importFile" class="hide" accept=".json">
+  </div>
+</section>
+</div>
+
+<script>
+const DATA = __DATA__;
+const DRILLS = __DRILLS__;
+const DCATS = __DCATS__;
+const WORDS = __WORDORDER__;
+const AUDIO = __AUDIO__;
+
+const LS='ru-deck-v3', BOX_DAYS=[0,1,3,7,21,60], DAY=864e5;
+function load(){try{return Object.assign({prog:{},decks:null,dcats:null,dir:'ru2en',
+  newLimit:20,mode:'card',auto:false,rate:0.8,nativeKb:false},JSON.parse(localStorage.getItem(LS)||'{}'));}
+  catch(e){return {prog:{},decks:null,dcats:null,dir:'ru2en',newLimit:20,mode:'card',
+    auto:false,rate:0.8,nativeKb:false};}}
+let S=load();
+// Some mobile browsers block storage for pages opened straight from a file. Detect it
+// rather than losing a week of reviews silently.
+let STORE_OK=false;
+try{ localStorage.setItem(LS+'-probe','1'); localStorage.removeItem(LS+'-probe'); STORE_OK=true; }
+catch(e){ STORE_OK=false; }
+function save(){ if(!STORE_OK)return; try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){} }
+
+const ALL=[]; DATA.decks.forEach(d=>d.cards.forEach(c=>ALL.push(Object.assign({deck:d.id},c))));
+const BY_DECK={}; DATA.decks.forEach(d=>BY_DECK[d.id]=d.cards);
+if(S.decks===null) S.decks=DATA.decks.filter(d=>d.on).map(d=>d.id);
+if(S.dcats===null) S.dcats=Object.keys(DCATS);
+
+const $=s=>document.querySelector(s);
+const now=()=>Date.now();
+const rec=id=>S.prog[id];
+const isDue=id=>{const r=rec(id);return !!r&&r.due<=now();};
+const isNew=id=>!rec(id);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function fmtDays(d){return d===0?'<1 min':d===1?'1 day':d+' days';}
+
+/* ---------------- speech ---------------- */
+let VOICE=null, TTS=('speechSynthesis' in window);
+const NO_VOICE_MSG =
+  'No Russian voice was found on this device, so the 🔊 buttons are off. '+
+  'The <b>Audio</b> tab still works — those are real recordings and need no voice installed. '+
+  'To enable 🔊: on <b>Windows</b>, Settings → Time &amp; language → Language &amp; region → '+
+  'Add a language → Русский → tick Text-to-speech. On <b>Android</b>, Settings → '+
+  'Accessibility → Text-to-speech → install the Russian voice data. On <b>iPhone</b>, '+
+  'Settings → Accessibility → Spoken Content → Voices → Russian.';
+
+function pickVoice(final){
+  const info=$('#voiceInfo');
+  if(!TTS){
+    if(info)info.innerHTML='This browser has no speech synthesis. Use the Audio tab instead.';
+    $('#voiceWarn').innerHTML='<b>Speech not supported.</b> The Audio tab still works.';
+    return;
+  }
+  const vs=speechSynthesis.getVoices()||[];
+  // accept any Russian variant, by language tag or by voice name; network voices are
+  // fine (Android often exposes only those) but a local one is preferred when present
+  const ru=vs.filter(v=>/^ru\b|^ru-/i.test(v.lang||'')||/russian|русск/i.test(v.name||''));
+  VOICE = ru.find(v=>v.localService) || ru[0] || null;
+  // voices load asynchronously; only give up once called with final=true
+  if(!vs.length && !final){ if(info)info.textContent='Loading voices…'; return; }
+  if(VOICE){
+    if(info)info.textContent='Using "'+VOICE.name+'" ('+VOICE.lang+')'+
+      (VOICE.localService?' — on-device':' — needs a connection')+'.';
+    $('#voiceWarn').classList.add('hide');
+  }else{
+    if(info)info.innerHTML=NO_VOICE_MSG;
+    $('#voiceWarn').innerHTML='<b>Audio off.</b> '+NO_VOICE_MSG;
+    if(S.mode==='listen')$('#voiceWarn').classList.remove('hide');
+  }
+  document.querySelectorAll('.say').forEach(b=>b.disabled=!VOICE);
+}
+if(TTS){
+  speechSynthesis.onvoiceschanged=function(){pickVoice(true);};
+  pickVoice(); setTimeout(function(){pickVoice(true);},1200);
+}else{ setTimeout(function(){pickVoice(true);},0); }
+
+// iOS and some Android browsers only allow speech that starts inside a user gesture,
+// and only populate getVoices() after one. Unlock once on the first interaction.
+let UNLOCKED=false;
+function unlockSpeech(){
+  if(UNLOCKED||!TTS)return; UNLOCKED=true;
+  try{ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); }catch(e){}
+  pickVoice(true);
+}
+document.addEventListener('pointerdown',unlockSpeech,{once:true});
+document.addEventListener('keydown',unlockSpeech,{once:true});
+function speak(text,rate){
+  if(!TTS||!VOICE||!text)return false;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(String(text).replace(/́/g,'').replace(/\s*\/\s*/g,', '));
+    u.voice=VOICE; u.lang=VOICE.lang; u.rate=+(rate||S.rate)||0.8;
+    speechSynthesis.speak(u); return true;
+  }catch(e){return false;}
+}
+const sayText=c=>c.say||c.ru;
+// Wrap Russian in its own language tag so a screen reader switches voice for it instead of
+// reading Cyrillic with an English one (WCAG 3.1.2).
+const ruSpan=s=>'<span lang="ru">'+esc(s)+'</span>';
+// Several of these can be on screen at once (the card face and the feedback panel), so they
+// are found by class inside a given container. A shared id would collide and silently leave
+// every button but the first one dead.
+const sayBtn=(cls)=>'<button type="button" class="say '+(cls||'')+'" aria-label="Play the Russian"'+
+  (VOICE?'':' disabled')+'>'+(cls==='big'?'🔊':'🔊 <span>Listen</span>')+'</button>';
+
+function grade(id,q){
+  const r=rec(id)||{box:0,reps:0,ok:0,no:0};
+  if(q===0){r.box=0;r.no=(r.no||0)+1;}
+  else{r.box=Math.min(r.box+(q===2?2:1),BOX_DAYS.length-1);r.ok=(r.ok||0)+1;}
+  r.reps=(r.reps||0)+1;r.last=now();r.due=now()+BOX_DAYS[r.box]*DAY;
+  S.prog[id]=r;save();
+}
+
+/* ===================== vocabulary study ===================== */
+let queue=[],cur=null,shown=false,done=0,ok=0,cram=false,locked=false;
+const activeCards=()=>ALL.filter(c=>S.decks.indexOf(c.deck)>=0);
+function buildQueue(cr){
+  const pool=activeCards();
+  if(cr) return shuffle(pool.slice()).slice(0,40);
+  const due=shuffle(pool.filter(c=>isDue(c.id)));
+  const fresh=shuffle(pool.filter(c=>isNew(c.id))).slice(0,+S.newLimit);
+  return due.concat(fresh);
+}
+function startSession(cr){cram=!!cr;queue=buildQueue(cram);done=0;ok=0;next();}
+function refreshCounts(){
+  const pool=activeCards();
+  $('#cNew').textContent=pool.filter(c=>isNew(c.id)).length;
+  $('#cDue').textContent=pool.filter(c=>isDue(c.id)).length;
+  $('#cDone').textContent=done;
+  $('#cAcc').textContent=done?Math.round(ok/done*100)+'%':'—';
+}
+function next(){
+  shown=false;locked=false;$('#controls').innerHTML='';
+  if(!queue.length){
+    cur=null;$('#sCard').classList.add('hide');$('#modeSeg').classList.add('hide');
+    $('#emptyMsg').classList.remove('hide');
+    const pool=activeCards();
+    const later=pool.filter(c=>{const r=rec(c.id);return r&&r.due>now();}).length;
+    $('#emptyDetail').textContent=S.decks.length
+      ? done+' reviewed this session'+(done?' · '+Math.round(ok/done*100)+'% correct':'')+
+        '. '+later+' card(s) scheduled for later.'
+      : 'No decks selected — pick some on the Decks tab.';
+    refreshCounts();return;
+  }
+  $('#sCard').classList.remove('hide');$('#modeSeg').classList.remove('hide');
+  $('#emptyMsg').classList.add('hide');
+  cur=queue[0];cur._wrong=false;
+  cur._dir=(S.mode==='type'||S.mode==='listen')?'en2ru'
+          :S.dir==='mixed'?(Math.random()<.5?'ru2en':'en2ru'):S.dir;
+  $('#bar').style.width=(done/(done+queue.length)*100).toFixed(1)+'%';
+  refreshCounts();
+  ({card:renderCard,choice:renderChoice,type:renderType,listen:renderListen})[S.mode]();
+}
+/* Attach the speak action to every 🔊 inside `root`. Takes the text to speak and the
+   container to search; returns nothing. Scoped rather than global so the buttons on a
+   hidden tab are never the ones that get wired. */
+function wireSay(txt,root){
+  (root||document).querySelectorAll('.say').forEach(function(b){
+    b.onclick=function(e){e.stopPropagation();speak(txt);};
+  });
+}
+
+/* Paint the question side of a card. `hint` is the line under it; returns nothing.
+   Shared by Cards and Multiple-choice, which differ only in what goes below. */
+function renderFace(hint){
+  const showRu=cur._dir==='ru2en';
+  $('#face').innerHTML='<div class="prompt'+(showRu?'':' en')+'">'+
+    (showRu?ruSpan(cur.ru):esc(cur.en))+'</div>'+(showRu?sayBtn():'');
+  $('#hint').textContent=hint||'';
+  if(showRu){wireSay(sayText(cur),$('#face')); if(S.auto)speak(sayText(cur));}
+}
+function renderCard(){
+  $('#stage').classList.add('tap');
+  renderFace('tap to reveal · space');
+}
+function reveal(){
+  if(!cur||shown||S.mode!=='card')return; shown=true;
+  const back=cur._dir==='ru2en'?cur.en:cur.ru;
+  const bits=[]; if(cur.n)bits.push(esc(cur.n)); if(cur.g)bits.push(esc(cur.g));
+  const dk=DATA.decks.find(x=>x.id===cur.deck); if(dk)bits.push(esc(dk.name));
+  $('#face').insertAdjacentHTML('beforeend',
+    '<div class="answer"><div class="main">'+(cur._dir==='ru2en'?esc(back):ruSpan(back))+'</div>'+
+    (cur._dir==='en2ru'?sayBtn():'')+
+    '<div class="note">'+bits.join(' &nbsp;·&nbsp; ')+'</div></div>');
+  $('#hint').textContent='';
+  if(cur._dir==='en2ru'){wireSay(sayText(cur),$('#face')); if(S.auto)speak(sayText(cur));}
+  const r=rec(cur.id)||{box:0};
+  $('#controls').innerHTML='<div class="rate">'+
+    '<button class="again" data-q="0">Again<small>&lt;1 min</small></button>'+
+    '<button class="good" data-q="1">Good<small>'+fmtDays(BOX_DAYS[Math.min(r.box+1,5)])+'</small></button>'+
+    '<button data-q="2">Easy<small>'+fmtDays(BOX_DAYS[Math.min(r.box+2,5)])+'</small></button></div>';
+}
+function answerCard(q){
+  if(!cur||!shown)return;
+  if(!cram)grade(cur.id,q);
+  done++; if(q>0)ok++;
+  queue.shift(); if(q===0)queue.splice(Math.min(4,queue.length),0,cur);
+  next();
+}
+function distractors(card,dir,n){
+  const pool=(BY_DECK[card.deck]||[]).filter(c=>c.id!==card.id);
+  const key=dir==='ru2en'?'en':'ru';
+  const seen={},out=[]; seen[card[key]]=1;
+  const take=list=>{for(let i=0;i<list.length&&out.length<n;i++){const v=list[i][key];
+    if(!seen[v]){seen[v]=1;out.push(v);}}};
+  take(shuffle(pool.slice())); if(out.length<n)take(shuffle(ALL.slice()));
+  return out;
+}
+function renderChoice(){
+  const d=cur._dir,key=d==='ru2en'?'en':'ru';
+  $('#stage').classList.remove('tap');
+  renderFace('');
+  const opts=shuffle([cur[key]].concat(distractors(cur,d,3)));
+  cur._ans=opts.indexOf(cur[key]);
+  // the options are Russian when the prompt is English, so tag them for the screen reader
+  const wrap=key==='ru'?ruSpan:esc;
+  $('#controls').innerHTML='<div class="opts">'+opts.map(function(o,i){
+    return '<button type="button" data-i="'+i+'"><span class="k">'+(i+1)+
+           '</span><span>'+wrap(o)+'</span></button>';
+  }).join('')+'</div>';
+}
+/* Show the answer panel plus a Continue button beneath the current question.
+   `correct` picks the colour, `body` is the explanation HTML, `label` overrides the
+   headline (typing has a third "so close" state). Returns nothing.
+   Every mode routes through here so only one place ever emits the Continue button. */
+function feedback(correct,body,label){
+  $('#controls').insertAdjacentHTML('beforeend',
+    '<div class="why"><div class="verdict '+(correct?'ok':'no')+'">'+
+    (label||(correct?'Correct':'Not quite'))+'</div>'+body+'</div>'+
+    '<button type="button" class="btn wide primary" id="cont" style="margin-top:10px">Continue</button>');
+  $('#cont').onclick=advance;
+}
+function pickChoice(i){
+  if(locked||S.mode!=='choice'||!cur)return; locked=true;
+  const correct=i===cur._ans; cur._wrong=!correct;
+  [].forEach.call($('#controls').querySelectorAll('.opts button'),function(b,j){
+    b.disabled=true;
+    if(j===cur._ans)b.classList.add('right'); else if(j===i)b.classList.add('wrong');});
+  if(!cram)grade(cur.id,correct?1:0);
+  done++; if(correct)ok++;
+  const dk=DATA.decks.find(x=>x.id===cur.deck);
+  feedback(correct,'<b>'+ruSpan(cur.ru)+'</b> — '+esc(cur.en)+
+    (cur.n?'<div class="muted small" style="margin-top:4px">'+esc(cur.n)+'</div>':'')+
+    '<div class="muted small" style="margin-top:6px">'+(dk?esc(dk.name):'')+'</div>');
+  if(!correct)speak(sayText(cur));
+  if(correct)setTimeout(function(){if(locked)advance();},750);
+}
+function advance(){
+  if(!cur)return;
+  const w=cur._wrong; queue.shift();
+  if(w)queue.splice(Math.min(4,queue.length),0,cur);
+  next();
+}
+const strip=s=>String(s).toLowerCase().replace(/́/g,'').replace(/ё/g,'е')
+                 .replace(/[^а-яa-z\s-]/g,'').replace(/\s+/g,' ').trim();
+function lev(a,b){
+  const n=b.length;let prev=[];for(let j=0;j<=n;j++)prev[j]=j;
+  for(let i=1;i<=a.length;i++){const row=[i];
+    for(let j=1;j<=n;j++)row[j]=Math.min(prev[j]+1,row[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    prev=row;}
+  return prev[n];
+}
+const TOUCH = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+const KB_ROWS = ['йцукенгшщзхъ', 'фывапролджэ', 'ячсмитьбю'];
+
+function typeUI(extra){
+  // On a phone the OS keyboard has no Cyrillic unless a Russian layout is installed,
+  // so drive input from this keyboard and ask the browser not to raise its own.
+  const rows = KB_ROWS.map(r =>
+    '<div class="kr">' + r.split('').map(c => '<button data-c="' + c + '">' + c + '</button>').join('') + '</div>'
+  ).join('') +
+  '<div class="kr">' +
+    '<button data-c="ё">ё</button>' +
+    '<button class="w3" data-c=" ">space</button>' +
+    '<button class="w2 act" data-act="bs">⌫</button>' +
+    '<button class="act" data-act="clr">✕</button>' +
+    (TOUCH ? '<button class="act" data-act="kb" title="use my own keyboard">⌨</button>' : '') +
+  '</div>';
+  // suppress the device keyboard by default on touch (most people will not have a
+  // Russian layout installed), but let anyone who does switch over with the ⌨ key
+  const useNative = TOUCH && S.nativeKb;
+  $('#controls').innerHTML = (extra || '') + '<div class="typeRow">' +
+    '<input id="tin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"' +
+    (TOUCH && !useNative ? ' inputmode="none"' : '') + ' placeholder="…">' +
+    '<button class="btn primary" id="tgo">Check</button></div>' +
+    '<div class="kb">' + rows + '</div>' +
+    '<button class="btn wide" id="tskip" style="margin-top:10px">Skip / I don\'t know</button>';
+  const inp = $('#tin');
+  $('#tgo').onclick = function(){ checkType(inp.value); };
+  $('#tskip').onclick = function(){ checkType(''); };
+  inp.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); checkType(inp.value); }});
+  $('#controls').querySelector('.kb').addEventListener('click', function(e){
+    const b = e.target.closest('button'); if(!b) return;
+    e.preventDefault();
+    if(b.dataset.act === 'kb'){
+      S.nativeKb = !S.nativeKb; save();
+      const keep = inp.value; typeUI(extra); $('#tin').value = keep;
+      if(S.nativeKb) $('#tin').focus();
+      return;
+    }
+    if(b.dataset.act === 'bs')       inp.value = inp.value.slice(0, -1);
+    else if(b.dataset.act === 'clr') inp.value = '';
+    else                             inp.value += b.dataset.c;
+    if(!TOUCH || useNative) inp.focus();
+  });
+  if(!TOUCH || useNative) setTimeout(function(){ inp.focus(); }, 50);
+}
+function renderType(){
+  $('#stage').classList.remove('tap');
+  $('#face').innerHTML='<div class="prompt en">'+esc(cur.en)+'</div>'+
+    '<div class="qhint">'+(cur.g?esc(cur.g)+' · ':'')+'type the Russian</div>';
+  $('#hint').textContent=''; typeUI();
+}
+function renderListen(){
+  $('#stage').classList.remove('tap');
+  if(!VOICE){   // dictation is impossible without a voice — offer the real recordings instead
+    $('#voiceWarn').classList.remove('hide');
+    const hasAudio=AUDIO.length>0;
+    $('#face').innerHTML='<div class="prompt en">Dictation needs a Russian voice</div>'+
+      '<div class="qhint">'+(hasAudio
+        ? 'The Audio tab needs no voice installed — those are real recordings, and '+
+          'dictation from them is better practice anyway.'
+        : 'Install a Russian voice (see the note above), or use Type mode meanwhile.')+'</div>';
+    $('#hint').textContent='';
+    $('#controls').innerHTML=(hasAudio
+      ? '<button type="button" class="btn wide primary" id="toAudio">Go to the workbook recordings</button>'
+      : '')+
+      '<button type="button" class="btn wide" id="toType" style="margin-top:8px">Use Type mode instead</button>';
+    if(hasAudio)$('#toAudio').onclick=function(){
+      [].filter.call(document.querySelectorAll('nav button'),x=>x.dataset.tab==='audio')[0].click();};
+    $('#toType').onclick=function(){
+      [].filter.call($('#modeSeg').children,x=>x.dataset.mode==='type')[0].click();};
+    return;
+  }
+  $('#face').innerHTML=sayBtn('big')+'<div class="qhint" style="margin-top:14px">'+
+    'listen, then type what you hear</div>';
+  $('#hint').textContent='';
+  wireSay(sayText(cur),$('#face'));
+  speak(sayText(cur));
+  typeUI();
+}
+function checkType(val){
+  if(locked||!cur||(S.mode!=='type'&&S.mode!=='listen'))return;
+  const gv=strip(val);
+  const variants=String(cur.ru).split(/\s*\/\s*/).map(strip).filter(Boolean);
+  const exact=gv!==''&&variants.indexOf(gv)>=0;
+  const close=!exact&&gv.length>2&&variants.some(v=>lev(v,gv)<=1);
+  locked=true; cur._wrong=!exact;
+  if(!cram)grade(cur.id,exact?1:0);
+  done++; if(exact)ok++;
+  $('#controls').innerHTML='';
+  feedback(exact,
+    (gv?'<div class="muted small">you wrote: '+esc(val)+'</div>':'')+
+    '<div style="font-size:21px;font-weight:600;margin:6px 0"><b>'+ruSpan(cur.ru)+'</b></div>'+
+    '<div class="muted">'+esc(cur.en)+'</div>'+
+    (cur.n?'<div class="muted small" style="margin-top:4px">'+esc(cur.n)+'</div>':'')+
+    sayBtn(),
+    exact?null:(close?'So close — check the spelling':'Not quite'));
+  wireSay(sayText(cur),$('#controls'));
+  $('#cont').focus();
+  if(!exact)speak(sayText(cur));
+}
+
+/* ===================== grammar drills ===================== */
+let dQueue=[],dCur=null,dDone=0,dOk=0,dCram=false,dLocked=false;
+const activeDrills=()=>DRILLS.filter(d=>S.dcats.indexOf(d.cat)>=0);
+function dBuild(cr){
+  const pool=activeDrills();
+  if(cr)return shuffle(pool.slice()).slice(0,25);
+  const due=shuffle(pool.filter(d=>isDue(d.id)));
+  return due.concat(shuffle(pool.filter(d=>isNew(d.id))).slice(0,15));
+}
+function dStart(cr){dCram=!!cr;dQueue=dBuild(dCram);dDone=0;dOk=0;dNext();}
+function dNext(){
+  dLocked=false;$('#dControls').innerHTML='';
+  if(!dQueue.length){
+    dCur=null;$('#dCard').classList.add('hide');$('#dEmpty').classList.remove('hide');
+    $('#dEmptyDetail').textContent=S.dcats.length
+      ? dDone+' answered'+(dDone?' · '+Math.round(dOk/dDone*100)+'% correct':'')+
+        '. Come back later, or practise anyway.'
+      : 'No topics selected.';
+    return;
+  }
+  $('#dCard').classList.remove('hide');$('#dEmpty').classList.add('hide');
+  dCur=dQueue[0];dCur._wrong=false;
+  $('#dFace').innerHTML='<div class="prompt q" lang="ru">'+esc(dCur.q)+'</div>'+
+    (dCur.hint?'<div class="qhint">'+esc(dCur.hint)+'</div>':'');
+  $('#dBar').style.width=(dDone/(dDone+dQueue.length)*100).toFixed(1)+'%';
+  $('#dDue').textContent=activeDrills().filter(d=>isDue(d.id)).length;
+  $('#dDone').textContent=dDone;
+  $('#dAcc').textContent=dDone?Math.round(dOk/dDone*100)+'%':'—';
+  $('#dControls').innerHTML='<div class="opts">'+dCur.opts.map(function(o,i){
+    return '<button type="button" data-i="'+i+'"><span class="k">'+(i+1)+
+           '</span><span lang="ru">'+esc(o)+'</span></button>';
+  }).join('')+'</div>';
+}
+function dPick(i){
+  if(dLocked||!dCur)return; dLocked=true;
+  const correct=i===dCur.a; dCur._wrong=!correct;
+  [].forEach.call($('#dControls').querySelectorAll('.opts button'),function(b,j){
+    b.disabled=true;
+    if(j===dCur.a)b.classList.add('right'); else if(j===i)b.classList.add('wrong');});
+  if(!dCram)grade(dCur.id,correct?1:0);
+  dDone++; if(correct)dOk++;
+  $('#dControls').insertAdjacentHTML('beforeend',
+    '<div class="why"><div class="verdict '+(correct?'ok':'no')+'">'+
+    (correct?'Correct':'Not quite')+'</div>'+esc(dCur.why)+
+    '<div class="muted small" style="margin-top:6px">'+esc(DCATS[dCur.cat][0])+'</div></div>'+
+    '<button class="btn wide primary" id="dCont" style="margin-top:10px">Continue</button>');
+  $('#dCont').onclick=dAdvance;
+  if(correct)setTimeout(function(){if(dLocked)dAdvance();},750);
+}
+function dAdvance(){
+  if(!dCur)return;
+  const w=dCur._wrong; dQueue.shift();
+  if(w)dQueue.splice(Math.min(4,dQueue.length),0,dCur);
+  dNext();
+}
+function renderDrillCats(){
+  $('#drillCats').innerHTML=Object.keys(DCATS).map(function(k){
+    const on=S.dcats.indexOf(k)>=0,pool=DRILLS.filter(d=>d.cat===k);
+    return '<div class="deck '+(on?'on':'')+'" data-cat="'+k+'"><div class="box">'+(on?'✓':'')+'</div>'+
+      '<div class="nm"><b>'+esc(DCATS[k][0])+'</b><span>'+esc(DCATS[k][1])+'</span></div>'+
+      '<div class="ct">'+pool.length+' items<br>'+pool.filter(d=>rec(d.id)).length+' started</div></div>';
+  }).join('');
+}
+
+/* ===================== word-order builder ===================== */
+let wQueue=[],wCur=null,wPlaced=[],wBank=[],wDone=0,wOk=0,wLocked=false;
+function wStart(){
+  const due=shuffle(WORDS.filter(w=>isDue(w.id)));
+  const fresh=shuffle(WORDS.filter(w=>isNew(w.id))).slice(0,10);
+  wQueue=due.concat(fresh);
+  if(!wQueue.length)wQueue=shuffle(WORDS.slice()).slice(0,10);
+  wDone=0;wOk=0;wNext();
+}
+function wNext(){
+  wLocked=false;$('#wControls').innerHTML='';
+  wCur=wQueue[0];
+  if(!wCur){$('#wPrompt').textContent='All done for now.';
+    $('#wSlot').innerHTML='';$('#wBank').innerHTML='';$('#wHint').textContent='';return;}
+  $('#wPrompt').textContent=wCur.en;
+  $('#wHint').textContent=wCur.why||'';
+  wPlaced=[]; wBank=shuffle(wCur.ru.split(' ').slice());
+  $('#wDone').textContent=wDone;
+  $('#wAcc').textContent=wDone?Math.round(wOk/wDone*100)+'%':'—';
+  wRender();
+  $('#wControls').innerHTML='<button class="btn wide primary" id="wGo">Check</button>';
+  $('#wGo').onclick=wCheck;
+}
+function wRender(){
+  $('#wSlot').innerHTML=wPlaced.map((t,i)=>'<button type="button" class="chip" lang="ru" data-p="'+i+'">'+esc(t)+'</button>').join('');
+  $('#wBank').innerHTML=wBank.map((t,i)=>'<button type="button" class="chip" lang="ru" data-b="'+i+'">'+esc(t)+'</button>').join('');
+}
+function wCheck(){
+  if(wLocked||!wCur)return;
+  const given=wPlaced.join(' '), correct=given===wCur.ru;
+  wLocked=true; wDone++; if(correct)wOk++;
+  grade(wCur.id,correct?1:0);
+  const target=wCur.ru.split(' ');
+  $('#wSlot').innerHTML=wPlaced.map((t,i)=>
+    '<span class="chip '+(t===target[i]?'ok':'no')+'">'+esc(t)+'</span>').join('');
+  $('#wBank').innerHTML='';
+  $('#wControls').innerHTML='<div class="why"><div class="verdict '+(correct?'ok':'no')+'">'+
+    (correct?'Correct':'Not quite')+'</div><b>'+ruSpan(wCur.ru)+'</b>'+
+    (wCur.why?'<div class="muted small" style="margin-top:6px">'+esc(wCur.why)+'</div>':'')+
+    sayBtn()+'</div>'+
+    '<button class="btn wide primary" id="wCont" style="margin-top:10px">Continue</button>';
+  wireSay(wCur.ru,$('#wControls')); speak(wCur.ru);
+  $('#wCont').onclick=function(){
+    const w=!correct; wQueue.shift(); if(w)wQueue.splice(Math.min(3,wQueue.length),0,wCur);
+    wNext();};
+}
+$('#wSlot').addEventListener('click',function(e){
+  const b=e.target.closest('button'); if(!b||wLocked)return;
+  wBank.push(wPlaced.splice(+b.dataset.p,1)[0]); wRender();});
+$('#wBank').addEventListener('click',function(e){
+  const b=e.target.closest('button'); if(!b||wLocked)return;
+  wPlaced.push(wBank.splice(+b.dataset.b,1)[0]); wRender();});
+
+/* ===================== workbook audio ===================== */
+function renderAudio(){
+  if($('#audioList')._done) return;
+  const groups=[];
+  AUDIO.forEach(function(a){
+    let g=groups.find(x=>x.lesson===a.lesson);
+    if(!g){g={lesson:a.lesson,items:[]};groups.push(g);}
+    g.items.push(a);
+  });
+  // preload="none" matters: 45 tracks at ~9 MB each must not be fetched on open
+  $('#audioList').innerHTML=groups.map(function(g){
+    return '<div class="card"><h3 style="margin:0 0 10px">'+esc(g.lesson)+'</h3>'+
+      g.items.map(function(a){
+        return '<div style="margin-bottom:14px">'+
+          '<div class="small" style="margin-bottom:5px"><b>'+esc(a.ex)+'</b>'+
+          ' <span class="muted">· workbook p.'+a.page+'</span></div>'+
+          '<audio controls preload="none" style="width:100%;max-width:100%" src="'+
+            esc(a.stream)+'"></audio>'+
+          '<div class="small" style="margin-top:3px"><a href="'+esc(a.link)+
+            '" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">'+
+            'download page</a></div></div>';
+      }).join('')+'</div>';
+  }).join('');
+  $('#audioList')._done=true;
+}
+
+/* ===================== decks / browse / stats ===================== */
+function renderDecks(){
+  $('#deckList').innerHTML=DATA.decks.map(function(d){
+    const on=S.decks.indexOf(d.id)>=0;
+    return '<div class="deck '+(on?'on':'')+'" data-id="'+d.id+'"><div class="box">'+(on?'✓':'')+'</div>'+
+      '<div class="nm"><b>'+esc(d.name)+'</b><span>'+esc(d.sub)+'</span></div>'+
+      '<div class="ct">'+d.cards.length+' cards<br>'+d.cards.filter(c=>rec(c.id)).length+' started</div></div>';
+  }).join('');
+}
+const norm=s=>String(s).toLowerCase().replace(/́/g,'').replace(/ё/g,'е');
+$('#q').addEventListener('input',function(e){
+  const v=norm(e.target.value.trim());
+  if(v.length<2){$('#results').innerHTML='';
+    $('#qCount').textContent='Type to search all '+ALL.length+' cards.';return;}
+  const hits=ALL.filter(c=>norm(c.ru).indexOf(v)>=0||norm(c.en).indexOf(v)>=0).slice(0,300);
+  $('#qCount').textContent=hits.length+' match'+(hits.length===1?'':'es');
+  $('#results').innerHTML='<div class="card">'+hits.map((c,i)=>
+    '<div class="vrow"><div class="r">'+ruSpan(c.ru)+'</div><div class="e">'+esc(c.en)+'</div>'+
+    (VOICE?'<button class="s" data-say="'+i+'">🔊</button>':'')+'</div>').join('')+'</div>';
+  $('#results')._hits=hits;
+});
+$('#results').addEventListener('click',function(e){
+  const b=e.target.closest('button[data-say]'); if(!b)return;
+  const h=$('#results')._hits; if(h)speak(sayText(h[+b.dataset.say]));
+});
+function renderStats(){
+  const seen=ALL.filter(c=>rec(c.id)),byBox=[0,0,0,0,0,0];
+  seen.forEach(c=>byBox[rec(c.id).box]++);
+  let ro=0,rn=0;
+  ALL.concat(DRILLS,WORDS).forEach(function(x){const r=rec(x.id);if(r){ro+=r.ok||0;rn+=r.no||0;}});
+  $('#statBody').innerHTML='<h3 style="margin-top:0">Progress</h3>'+
+    '<p><b>'+seen.length+'</b> of '+ALL.length+' vocabulary cards started · <b>'+
+      ALL.filter(c=>isDue(c.id)).length+'</b> due now</p>'+
+    '<p><b>'+DRILLS.filter(d=>rec(d.id)).length+'</b> of '+DRILLS.length+' grammar drills started · <b>'+
+      DRILLS.filter(d=>isDue(d.id)).length+'</b> due now</p>'+
+    '<p><b>'+WORDS.filter(w=>rec(w.id)).length+'</b> of '+WORDS.length+' sentence builds started</p>'+
+    '<p class="muted small">Lifetime answers: '+ro+' correct / '+(ro+rn)+' total '+
+      (ro+rn?'('+Math.round(ro/(ro+rn)*100)+'%)':'')+'</p>'+
+    '<table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px">'+
+    byBox.map((n,i)=>'<tr><td style="padding:4px 0">Box '+i+' <span class="muted small">('+
+      fmtDays(BOX_DAYS[i])+')</span></td><td style="padding:4px 0;text-align:right"><b>'+n+
+      '</b></td></tr>').join('')+'</table>';
+}
+
+/* ===================== events ===================== */
+$('#stage').addEventListener('click',reveal);
+$('#controls').addEventListener('click',function(e){
+  const b=e.target.closest('button'); if(!b)return;
+  if(b.dataset.q!==undefined)answerCard(+b.dataset.q);
+  else if(b.dataset.i!==undefined)pickChoice(+b.dataset.i);
+});
+$('#dControls').addEventListener('click',function(e){
+  const b=e.target.closest('button');
+  if(b&&b.dataset.i!==undefined)dPick(+b.dataset.i);
+});
+$('#modeSeg').addEventListener('click',function(e){
+  const b=e.target.closest('button'); if(!b)return;
+  S.mode=b.dataset.mode;save();
+  [].forEach.call($('#modeSeg').children,x=>x.classList.toggle('on',x===b));
+  if((S.mode==='listen')&&!VOICE){pickVoice();}
+  startSession(cram);
+});
+$('#cram').onclick=function(){startSession(true);};
+$('#dCram').onclick=function(){dStart(true);};
+$('#deckList').addEventListener('click',function(e){
+  const d=e.target.closest('.deck'); if(!d)return;
+  const id=d.dataset.id;
+  S.decks=S.decks.indexOf(id)>=0?S.decks.filter(x=>x!==id):S.decks.concat(id);
+  save();renderDecks();startSession(false);
+});
+$('#drillCats').addEventListener('click',function(e){
+  const d=e.target.closest('.deck'); if(!d)return;
+  const c=d.dataset.cat;
+  S.dcats=S.dcats.indexOf(c)>=0?S.dcats.filter(x=>x!==c):S.dcats.concat(c);
+  save();renderDrillCats();dStart(false);
+});
+$('#selAll').onclick=function(){S.decks=DATA.decks.map(d=>d.id);save();renderDecks();startSession(false);};
+$('#selNone').onclick=function(){S.decks=[];save();renderDecks();startSession(false);};
+$('#dAll').onclick=function(){S.dcats=Object.keys(DCATS);save();renderDrillCats();dStart(false);};
+$('#dNone').onclick=function(){S.dcats=[];save();renderDrillCats();dStart(false);};
+$('#dir').onchange=function(e){S.dir=e.target.value;save();startSession(false);};
+$('#newLimit').onchange=function(e){S.newLimit=+e.target.value;save();startSession(false);};
+$('#autoPlay').onchange=function(e){S.auto=e.target.checked;save();};
+$('#rate').onchange=function(e){S.rate=+e.target.value;save();};
+$('#testVoice').onclick=function(){pickVoice();speak('Здравствуйте! Я говорю по-русски.');};
+$('#export').onclick=function(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));
+  a.download='russian-progress-'+new Date().toISOString().slice(0,10)+'.json';a.click();};
+$('#importBtn').onclick=function(){$('#importFile').click();};
+$('#importFile').onchange=function(e){
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=function(){try{S=Object.assign(S,JSON.parse(r.result));save();location.reload();}
+    catch(err){alert('Could not read that file.');}};
+  r.readAsText(f);};
+$('#reset').onclick=function(){if(confirm('Erase all progress on this device?')){
+  localStorage.removeItem(LS);location.reload();}};
+
+document.addEventListener('keydown',function(e){
+  const vis=id=>!document.getElementById(id).classList.contains('hide');
+  const ae=document.activeElement;
+  if(ae&&ae.id==='tin')return;
+  if(vis('drills')){
+    if(['1','2','3','4'].indexOf(e.key)>=0&&!dLocked)dPick(+e.key-1);
+    else if((e.code==='Space'||e.code==='Enter')&&dLocked){e.preventDefault();dAdvance();}
+    return;
+  }
+  if(!vis('study'))return;
+  if(S.mode==='card'){
+    if(e.code==='Space'||e.code==='Enter'){e.preventDefault();shown?answerCard(1):reveal();}
+    else if(shown&&['1','2','3'].indexOf(e.key)>=0)answerCard(+e.key-1);
+  }else if(S.mode==='choice'){
+    if(['1','2','3','4'].indexOf(e.key)>=0&&!locked)pickChoice(+e.key-1);
+    else if((e.code==='Space'||e.code==='Enter')&&locked){e.preventDefault();advance();}
+  }else if(locked&&(e.code==='Space'||e.code==='Enter')){e.preventDefault();advance();}
+  if(e.key==='r'&&cur)speak(sayText(cur));
+});
+
+document.querySelector('nav').addEventListener('click',function(e){
+  const b=e.target.closest('button'); if(!b)return;
+  document.querySelectorAll('nav button').forEach(function(x){
+    x.classList.toggle('on',x===b);
+    if(x===b) x.setAttribute('aria-current','page'); else x.removeAttribute('aria-current');
+  });
+  ['study','drills','build','audio','decks','guide','browse','stats'].forEach(function(t){
+    const el=document.getElementById(t);          // #audio is removed when there is no audio
+    if(el)el.classList.toggle('hide',t!==b.dataset.tab);
+  });
+  if(b.dataset.tab==='stats')renderStats();
+  if(b.dataset.tab==='audio')renderAudio();
+  if(b.dataset.tab==='decks'){renderDecks();pickVoice();}
+  if(b.dataset.tab==='drills'){renderDrillCats();if(!dCur)dStart(false);}
+  if(b.dataset.tab==='build'&&!wCur)wStart();
+});
+
+// The workbook recordings are optional local data (see DATA.md). With none present the tab
+// would be an empty shell, so remove it rather than show a dead link.
+if(!AUDIO.length){
+  const nb=[].filter.call(document.querySelectorAll('nav button'),x=>x.dataset.tab==='audio')[0];
+  if(nb)nb.remove();
+  $('#audio').remove();
+}
+if(!STORE_OK){
+  $('#storeWarn').innerHTML='<b>Progress cannot be saved on this device.</b> This browser is '+
+    'blocking storage for a page opened directly from a file. Serve the file over http '+
+    '(see the README) or open it from a different browser, and your reviews will stick.';
+  $('#storeWarn').classList.remove('hide');
+}
+$('#dir').value=S.dir;$('#newLimit').value=S.newLimit;
+$('#autoPlay').checked=!!S.auto;$('#rate').value=String(S.rate);
+[].forEach.call($('#modeSeg').children,x=>x.classList.toggle('on',x.dataset.mode===S.mode));
+renderDecks();renderDrillCats();startSession(false);
+</script>
+</body>
+</html>

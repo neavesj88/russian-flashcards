@@ -1,0 +1,17 @@
+# Data derived from copyrighted textbooks — see DATA.md. These are build inputs held
+# locally, never published. The build works without them and simply omits those decks.
+src/glossary.json
+src/audio.json
+
+# Generated at build time from the sources in src/
+index.html
+
+# Intermediate extraction artefacts
+src/*_layout.txt
+src/d*.pdf
+src/qr_*.json
+
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
